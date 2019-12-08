@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	s "gopkg.in/Iwark/spreadsheet.v2"
 	g "gopkg.in/src-d/go-git.v4"
@@ -27,8 +28,12 @@ func MakeClones(sheetID string, tabIndex int, column string, token string, skip 
 				if string(cellPos[0]) == column && len(cell.Value) > 0 {
 					checkIfError(err)
 
-					directory := "github.com/" + cell.Value
-					repoURL := "https://github.com/" + cell.Value
+					directory := "github.com/"
+					repoURL := cell.Value
+
+					if !strings.HasPrefix(repoURL, "https://"+directory) {
+						repoURL = "https://" + directory + cell.Value
+					}
 
 					warning("creating directory %s...", directory)
 					err = os.MkdirAll(directory, os.ModePerm)
@@ -51,7 +56,7 @@ func MakeClones(sheetID string, tabIndex int, column string, token string, skip 
 	}
 }
 
-// checkIfError should be used to naively panics if an error is not nil.
+// checkIfError should be used to naively panic if an error is not nil.
 func checkIfError(err error) {
 	if err == nil {
 		return

@@ -32,3 +32,5 @@ require (
 	gopkg.in/Iwark/spreadsheet.v2 v2.0.0-20190213044300-aa3ac0c59139
 	gopkg.in/src-d/go-git.v4 v4.10.0
 )
+
+go 1.13
