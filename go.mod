@@ -4,6 +4,7 @@ require (
 	github.com/BriantOliveira/DependencyLibrary v0.0.0-20190308165024-2de3c82bc269 // indirect
 	github.com/ajstarks/svgo v0.0.0-20181006003313-6ce6a3bcf6cd // indirect
 	github.com/connor-cahill/goCal v0.0.0-20190309232843-7eb87a39cde9 // indirect
+	github.com/debber/debber-v0.3 v0.0.0-20160226200915-cf10fd052975 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/go-chi/chi v4.0.2+incompatible // indirect
 	github.com/go-chi/render v1.0.1 // indirect
@@ -15,6 +16,8 @@ require (
 	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/gommon v0.2.8 // indirect
+	github.com/laher/argo v0.0.0-20140722103944-11d91c83cc0f // indirect
+	github.com/laher/goxc v0.18.1 // indirect
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.6 // indirect

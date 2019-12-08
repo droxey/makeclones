@@ -4,7 +4,21 @@
 
 `git clone` repositories (in `username/reponame` format) from a google sheet column!
 
+### Table of Contents
+
+1. [Installation](#installation)
+2. [Usage](#usage)
+
 ## Installation
+
+### Homebrew (Recommended)
+
+```bash
+brew tap droxey/makeclones
+brew install makeclones
+```
+
+### From Source
 
 ```bash
 $ go build && go install
@@ -25,13 +39,3 @@ $ makeclones
   -token string
         GitHub Personal Access Token (Create one at https://github.com/settings/tokens/new) with full control of private repositories (Required)
 ```
-
-## Release (WIP)
-
-### Build
-
-`docker build --tag=makeclones .`
-
-### Run
-
-`docker run makeclones`

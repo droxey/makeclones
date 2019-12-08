@@ -16,6 +16,7 @@ client_secret.json
 .env
 .DS_Store
 
+pkg/
 makeclones
 .env
 github.com/
