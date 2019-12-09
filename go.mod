@@ -6,8 +6,10 @@ require (
 	github.com/connor-cahill/goCal v0.0.0-20190309232843-7eb87a39cde9 // indirect
 	github.com/debber/debber-v0.3 v0.0.0-20160226200915-cf10fd052975 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/fatih/color v1.7.0 // indirect
 	github.com/go-chi/chi v4.0.2+incompatible // indirect
 	github.com/go-chi/render v1.0.1 // indirect
+	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/mux v1.7.0 // indirect
 	github.com/graphql-go/graphql v0.7.7 // indirect
 	github.com/jakeTran42/go-graphql v0.0.0-20190308220101-85d84166b94f // indirect
@@ -19,6 +21,8 @@ require (
 	github.com/laher/argo v0.0.0-20140722103944-11d91c83cc0f // indirect
 	github.com/laher/goxc v0.18.1 // indirect
 	github.com/lib/pq v1.0.0 // indirect
+	github.com/magicsong/color-glog v0.0.1 // indirect
+	github.com/magicsong/sonargo v0.0.1
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.6 // indirect
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
