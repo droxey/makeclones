@@ -8,7 +8,7 @@ GHRFLAGS =
 default: build
 
 build:
-	goxc -d=pkg -pv=$(VERSION) -bc="darwin,linux"
+	goxc -d=pkg -pv=$(VERSION) -bc="darwin"
 
 release:
-	ghr $(GHRFLAGS) v$(VERSION) pkg/$(VERSION)
+	ghr  -u droxey  $(GHRFLAGS) v$(VERSION) pkg/$(VERSION)
