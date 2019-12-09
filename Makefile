@@ -3,7 +3,7 @@
 #
 VERSION = snapshot
 GHRFLAGS =
-.PHONY: build release
+.PHONY: build release .scannerwork
 
 default: build
 
