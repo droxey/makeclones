@@ -11,14 +11,14 @@ func main() {
 	var authToken string
 	var skipRows int
 	var tabIndex int
-	var analyze bool
+	var runSonar bool
 
 	flag.StringVar(&sheet, "sheet", "", "Google Sheets spreadsheet ID (Required)")
 	flag.StringVar(&column, "column", "", "Column to scrape. Make sure data is in the format username/reponame (Required)")
 	flag.StringVar(&authToken, "token", "", "GitHub Personal Access Token (Create one at https://github.com/settings/tokens/new) with full control of private repositories (Required)")
 	flag.IntVar(&skipRows, "skip", 0, "Skip a number of rows to accomodate headers")
 	flag.IntVar(&tabIndex, "tab", 0, "Spreadsheet tab to look for the specified column")
-	flag.BoolVar(&analyze, "analyze", false, "Add to SonarQube for analysis.")
+	flag.BoolVar(&runSonar, "analyze", false, "EXPERIMENTAL. Add to SonarQube for analysis.")
 
 	flag.Parse()
 
@@ -37,5 +37,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	MakeClones(sheet, tabIndex, column, authToken, skipRows, analyze)
+	MakeClones(sheet, tabIndex, column, authToken, skipRows, runSonar)
 }

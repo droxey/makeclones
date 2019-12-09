@@ -21,3 +21,5 @@ makeclones
 .env
 github.com/
 .zip
+.scannerwork/
+.vscode/

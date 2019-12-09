@@ -8,26 +8,21 @@
 
 1. [Installation](#installation)
 2. [Usage](#usage)
+3. [Tips &amp; Tricks](#tips-amp-tricks)
 
 ## Installation
-
-### Homebrew (Recommended)
 
 ```bash
 brew tap droxey/makeclones
 brew install makeclones
 ```
 
-### From Source
-
-```bash
-$ go build && go install
-```
-
 ## Usage
 
 ```bash
 $ makeclones
+  -analyze bool
+        EXPERIMENTAL in v2. Add to SonarQube for analysis.
   -column string
         Column to scrape. Make sure data is in the format username/reponame (Required)
   -sheet string
@@ -39,3 +34,7 @@ $ makeclones
   -token string
         GitHub Personal Access Token (Create one at https://github.com/settings/tokens/new) with full control of private repositories (Required)
 ```
+
+## Tips & Tricks
+
+- If your Google Sheet is not publicly viewable, be sure to share it with `makeclones-cli@makeclones.iam.gserviceaccount.com`.

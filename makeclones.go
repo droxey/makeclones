@@ -5,8 +5,9 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 
-	sonargo "github.com/magicsong/sonargo/sonar"
+	_ "github.com/joho/godotenv/autoload"
 	s "gopkg.in/Iwark/spreadsheet.v2"
 	g "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
@@ -23,6 +24,8 @@ func MakeClones(sheetID string, tabIndex int, column string, token string, skip 
 	sheet, err := sheets.SheetByIndex(uint(tabIndex))
 	checkIfError(err)
 
+	var reposToAnalyze []string
+
 	for _, row := range sheet.Rows {
 		for _, cell := range row {
 			if cell.Row > uint(skip) {
@@ -30,11 +33,12 @@ func MakeClones(sheetID string, tabIndex int, column string, token string, skip 
 				if string(cellPos[0]) == column && len(cell.Value) > 0 {
 					checkIfError(err)
 
-					directory := "github.com/"
+					prefix := "github.com/"
+					directory := "github.com/" + cell.Value
 					repoURL := cell.Value
 
-					if !strings.HasPrefix(repoURL, "https://"+directory) {
-						repoURL = "https://" + directory + cell.Value
+					if !strings.HasPrefix(repoURL, "https://"+prefix) {
+						repoURL = "https://" + prefix + cell.Value
 					}
 
 					warning("creating directory %s...", directory)
@@ -55,33 +59,54 @@ func MakeClones(sheetID string, tabIndex int, column string, token string, skip 
 
 					if analyze {
 						name := strings.Split(repoURL, "https://github.com/")[1]
-						analyzeCode(name, directory)
+						reposToAnalyze = append(reposToAnalyze, name)
 					}
-
 				}
 			}
 		}
 	}
+
+	if analyze {
+		// Run analysis syncronously.
+		// sonar-scanner does not support concurrent operations.
+		wg := new(sync.WaitGroup)
+		wg.Add(len(reposToAnalyze))
+
+		for _, repo := range reposToAnalyze {
+			analyzeCode(repo, wg)
+		}
+
+		wg.Wait()
+	}
 }
 
-func analyzeCode(name string, directory string) {
-	// Create the project in SonarQube.
-	sonarURL := "https://code.dev.droxey.com"
-	client, err := sonargo.NewClient(sonarURL+"/api", "makeclones", "374ec0a5006cbd4e6d491fa31531e26b39b8e0cc")
-	checkIfError(err)
+func analyzeCode(name string, wg *sync.WaitGroup) {
+	sonarURL := os.Getenv("SONARQUBE_URL")
+	sonarUser := os.Getenv("SONARQUBE_USERNAME")
+	sonarPass := os.Getenv("SONARQUBE_PASSWORD")
 
-	opts := &sonargo.ProjectsCreateOption{"master", name, name, "everyone"}
-	v, _, err := client.Projects.Create(opts)
-	checkIfError(err)
+	// // Connect to SonarQube instance.
+	// client, err := sonargo.NewClient(sonarURL+"/api", sonarUser, sonarPass)
+	// checkIfError(err)
+
+	// // Create a new Sonarqube Project.
+	// opts := &sonargo.ProjectsCreateOption{Branch: "master", Name: name, Project: name, Visibility: ""}
+	// _, _, err = client.Projects.Create(opts)
+	// checkIfError(err)
 
 	// Run sonar-scanner in the project directory to initialize the scan.
+	info("starting analysis: %s", name)
 	cmd := exec.Command("sonar-scanner",
-		fmt.Sprintf("Dsonar.projectKey=%s", v.Project.Key),
-		"Dsonar.sources=.",
-		"Dsonar.host.url=https://code.dev.droxey.com",
-		"Dsonar.login=374ec0a5006cbd4e6d491fa31531e26b39b8e0cc")
-	cmd.Dir = directory
-	cmd.Run()
+		"-Dsonar.projectKey="+name,
+		"-Dsonar.sources=.",
+		"-Dsonar.host.url="+sonarURL,
+		"-Dsonar.login="+sonarUser,
+		"-Dsonar.password="+sonarPass)
+	cmd.Start()
+	cmd.Wait()
+
+	info("analysis complete: %s", name)
+	wg.Done()
 }
 
 // checkIfError should be used to naively panic if an error is not nil.

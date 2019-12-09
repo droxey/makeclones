@@ -1,0 +1,3 @@
+SONARQUBE_USERNAME=username
+SONARQUBE_PASSWORD=password
+SONARQUBE_URL=url-to-sonarqube
