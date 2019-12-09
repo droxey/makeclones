@@ -76,7 +76,7 @@ func analyzeCode(name string, directory string) {
 
 	// Run sonar-scanner in the project directory to initialize the scan.
 	cmd := exec.Command("sonar-scanner",
-		fmt.Sprint("Dsonar.projectKey=%s", v.Project.Key),
+		fmt.Sprintf("Dsonar.projectKey=%s", v.Project.Key),
 		"Dsonar.sources=.",
 		"Dsonar.host.url=https://code.dev.droxey.com",
 		"Dsonar.login=374ec0a5006cbd4e6d491fa31531e26b39b8e0cc")
