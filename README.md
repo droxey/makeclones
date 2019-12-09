@@ -15,7 +15,7 @@
 
 ```bash
 brew tap droxey/makeclones
-brew install droxey/makeclones/makeclones
+brew install makeclones
 ```
 
 ### From Source
