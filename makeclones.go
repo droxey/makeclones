@@ -3,9 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
-	"sync"
+	"time"
 
 	_ "github.com/joho/godotenv/autoload"
 	s "gopkg.in/Iwark/spreadsheet.v2"
@@ -14,6 +13,7 @@ import (
 )
 
 // MakeClones from a spreadsheet column
+// Initial Benchmark: 21 reopos in 246 seconds
 func MakeClones(sheetID string, tabIndex int, column string, token string, skip int, analyze bool) {
 	service, err := s.NewService()
 	checkIfError(err)
@@ -24,7 +24,12 @@ func MakeClones(sheetID string, tabIndex int, column string, token string, skip 
 	sheet, err := sheets.SheetByIndex(uint(tabIndex))
 	checkIfError(err)
 
-	var reposToAnalyze []string
+	// var reposToAnalyze []string
+
+	// initialize variable to store the number of repos cloned off of the initial sheet.
+	// for benchmarking purposes
+	var numOfReposCloned int
+	start := time.Now()
 
 	for _, row := range sheet.Rows {
 		for _, cell := range row {
@@ -56,65 +61,68 @@ func MakeClones(sheetID string, tabIndex int, column string, token string, skip 
 					})
 
 					checkIfError(err)
-
-					if analyze {
-						name := strings.Split(repoURL, "https://github.com/")[1]
-						reposToAnalyze = append(reposToAnalyze, name)
-					}
+					numOfReposCloned++
+					// if analyze {
+					// 	name := strings.Split(repoURL, "https://github.com/")[1]
+					// 	reposToAnalyze = append(reposToAnalyze, name)
+					// }
 				}
 			}
 		}
+
 	}
+	// display the number of repos and length of time in the terminal
+	since := time.Since(start).Seconds()
+	info("Cloned %d repos in %2f seconds", numOfReposCloned, since)
 
-	if analyze {
-		// Run analysis syncronously.
-		// sonar-scanner does not support concurrent operations.
-		wg := new(sync.WaitGroup)
-		wg.Add(len(reposToAnalyze))
+	// if analyze {
+	// 	// Run analysis syncronously.
+	// 	// sonar-scanner does not support concurrent operations.
+	// 	wg := new(sync.WaitGroup)
+	// 	wg.Add(len(reposToAnalyze))
 
-		for _, repo := range reposToAnalyze {
-			analyzeCode(repo, wg)
-		}
+	// 	for _, repo := range reposToAnalyze {
+	// 		analyzeCode(repo, wg)
+	// 	}
 
-		wg.Wait()
-	}
+	// 	wg.Wait()
+	// }
 }
 
-func analyzeCode(name string, wg *sync.WaitGroup) {
-	sonarURL := os.Getenv("SONARQUBE_URL")
-	sonarUser := os.Getenv("SONARQUBE_USERNAME")
-	sonarPass := os.Getenv("SONARQUBE_PASSWORD")
+// func analyzeCode(name string, wg *sync.WaitGroup) {
+// 	sonarURL := os.Getenv("SONARQUBE_URL")
+// 	sonarUser := os.Getenv("SONARQUBE_USERNAME")
+// 	sonarPass := os.Getenv("SONARQUBE_PASSWORD")
 
-	// // Connect to SonarQube instance.
-	// client, err := sonargo.NewClient(sonarURL+"/api", sonarUser, sonarPass)
-	// checkIfError(err)
+// 	// // Connect to SonarQube instance.
+// 	// client, err := sonargo.NewClient(sonarURL+"/api", sonarUser, sonarPass)
+// 	// checkIfError(err)
 
-	// // Create a new Sonarqube Project.
-	// opts := &sonargo.ProjectsCreateOption{Branch: "master", Name: name, Project: name, Visibility: ""}
-	// _, _, err = client.Projects.Create(opts)
-	// checkIfError(err)
+// 	// // Create a new Sonarqube Project.
+// 	// opts := &sonargo.ProjectsCreateOption{Branch: "master", Name: name, Project: name, Visibility: ""}
+// 	// _, _, err = client.Projects.Create(opts)
+// 	// checkIfError(err)
 
-	// Run sonar-scanner in the project directory to initialize the scan.
-	info("starting analysis: %s", name)
-	cmd := exec.Command("sonar-scanner",
-		"-Dsonar.projectKey="+name,
-		"-Dsonar.sources=.",
-		"-Dsonar.host.url="+sonarURL,
-		"-Dsonar.login="+sonarUser,
-		"-Dsonar.password="+sonarPass)
-	cmd.Start()
-	cmd.Wait()
+// 	// Run sonar-scanner in the project directory to initialize the scan.
+// 	info("starting analysis: %s", name)
+// 	cmd := exec.Command("sonar-scanner",
+// 		"-Dsonar.projectKey="+name,
+// 		"-Dsonar.sources=.",
+// 		"-Dsonar.host.url="+sonarURL,
+// 		"-Dsonar.login="+sonarUser,
+// 		"-Dsonar.password="+sonarPass)
+// 	cmd.Start()
+// 	cmd.Wait()
 
-	info("analysis complete: %s", name)
-	wg.Done()
-}
+// 	info("analysis complete: %s", name)
+// 	wg.Done()
+// }
 
 // checkIfError should be used to naively panic if an error is not nil.
 func checkIfError(err error) {
 	if err == nil {
 		return
 	}
-
 	fmt.Printf("[makeclones] \x1b[31;1m%s\x1b[0m\n", fmt.Sprintf("%s", err))
 	//os.Exit(1)
 }

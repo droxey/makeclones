@@ -37,6 +37,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421 // indirect
 	google.golang.org/api v0.1.0 // indirect
 	gopkg.in/Iwark/spreadsheet.v2 v2.0.0-20190213044300-aa3ac0c59139
+	gopkg.in/gookit/color.v1 v1.1.6
 	gopkg.in/src-d/go-git.v4 v4.10.0
 )
 
