@@ -41,6 +41,6 @@ func main() {
 
 	MakeClones(sheet, tabIndex, column, authToken, skipRows, runSonar)
 	// display the number of repos and length of time in the terminal
-	// 	since := time.Since(start).Seconds()
-	// 	info("Cloned %d repos in %2f seconds", numOfReposCloned, since)
+	// since := time.Since(start).Seconds()
+	// info("Cloned %d repos in %2f seconds", numOfReposCloned, since)
 }

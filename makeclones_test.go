@@ -13,7 +13,7 @@ const (
 )
 
 func BenchmarkMakeClones(b *testing.B) {
-	for i := 0; i < 1; i++ {
+	for i := 0; i < b.N; i++ {
 		MakeClones(os.Getenv("SHEETID"), tabIndex, column, os.Getenv("POATOKEN"), skip, analyze)
 	}
 }
