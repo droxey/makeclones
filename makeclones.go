@@ -17,15 +17,13 @@ type repoDirPair struct {
 	Token   string
 }
 
-// var mux sync.Mutex
-
 // initialize variable to store the number of repos cloned off of the initial sheet.
 // for benchmarking purposes
 var numOfReposCloned int
 
 // MakeClones from a spreadsheet column
-// Initial Benchmark: 21 reopos in 246 seconds
-func MakeClones(sheetID string, tabIndex int, column string, token string, skip int, analyze bool) {
+// first optimized version: 21 repos 61 seconds
+func MakeClones(sheetID string, tabIndex int, column string, token string, skip int) {
 	service, err := s.NewService()
 	checkIfError(err)
 
@@ -40,7 +38,8 @@ func MakeClones(sheetID string, tabIndex int, column string, token string, skip 
 
 	var numOfDirs int
 
-	for i := 1; i <= 9; i++ {
+	// creates 10 workers to start concurrently cloning repos
+	for i := 0; i < 10; i++ {
 		go cloneWorker(repoDirChan, results)
 	}
 
@@ -62,26 +61,31 @@ func MakeClones(sheetID string, tabIndex int, column string, token string, skip 
 					warning("creating directory %s...", directory)
 					err = os.MkdirAll(directory, os.ModePerm)
 					checkIfError(err)
+
 					numOfDirs++
-
+					// add a struct of the directory RepoUrl and github token into the channel
 					repoDirChan <- repoDirPair{Dir: directory, RepoURL: repoURL, Token: token}
-
 				}
 			}
 		}
 	}
+
+	// close the channel that was storing the repo struct
 	close(repoDirChan)
+	// unload the results n, where n is the number of repos cloned, times
 	for a := 1; a <= numOfDirs; a++ {
 		<-results
 	}
 }
 
+// worker to pass the information from the struct into the clone helper function
 func cloneWorker(pairs chan repoDirPair, results chan<- bool) {
 	for pair := range pairs {
 		results <- clone(pair.Token, pair.RepoURL, pair.Dir)
 	}
 }
 
+// cloning herlper function to work with the channels to clone the repos
 func clone(token, repoURL, directory string) bool {
 	info("cloning %s into %s...", repoURL, directory)
 	_, err := g.PlainClone(directory, false, &g.CloneOptions{
@@ -93,8 +97,12 @@ func clone(token, repoURL, directory string) bool {
 		Progress: os.Stdout,
 	})
 	checkIfError(err)
-	numOfReposCloned++
-	return true
+
+	if err == nil {
+		numOfReposCloned++
+		return true
+	}
+	return false
 }
 
 // checkIfError should be used to naively panic if an error is not nil.
